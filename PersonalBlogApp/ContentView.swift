@@ -11,7 +11,6 @@ struct ContentView: View {
     @State private var draftTagsText = ""
     @State private var draftContent = ""
     @State private var draftIsFeatured = false
-    @State private var draftTheme: BlogTheme = .blue
 
     private let author = AuthorProfile(
         name: "Chen",
@@ -29,10 +28,10 @@ struct ContentView: View {
 
     var body: some View {
         TabView {
-            HomeTab(posts: posts)
+            HomeTab(posts: posts)   //Home页的页面
                 .tabItem { Label("Home", systemImage: "house.fill") }
 
-            ArticlesTab(
+            ArticlesTab(          //Articles的页面
                 posts: posts,
                 isComposerPresented: $isComposerPresented,
                 postPendingDeletion: $postPendingDeletion
@@ -97,11 +96,6 @@ struct ContentView: View {
                 }
 
                 Section("展示样式") {
-                    Picker("主题", selection: $draftTheme) {
-                        ForEach(BlogTheme.allCases) { theme in
-                            Text(theme.rawValue).tag(theme)
-                        }
-                    }
                     Toggle("设为首页 Featured 文章", isOn: $draftIsFeatured)
 
                     HStack {
@@ -137,7 +131,6 @@ struct ContentView: View {
                                 publishDateText: "今天",
                                 readingTime: max(1, draftContent.count / 180),
                                 tagsText: draftTagsText,
-                                theme: draftTheme,
                                 isFeatured: draftIsFeatured,
                                 sections: [
                                     BlogSection(
@@ -156,7 +149,6 @@ struct ContentView: View {
                         draftTagsText = ""
                         draftContent = ""
                         draftIsFeatured = false
-                        draftTheme = .blue
                         isComposerPresented = false
                     }
                     .disabled(draftTitle.isEmpty || draftCategory.isEmpty || draftContent.isEmpty)
@@ -180,7 +172,6 @@ struct ContentView: View {
                 publishDateText: "2026-03-10",
                 readingTime: 6,
                 tagsText: "SwiftUI, Portfolio, Design",
-                theme: .blue,
                 isFeatured: true,
                 sections: [
                     .init(title: "为什么作品集项目很重要", body: "作品集项目能快速体现你的代码能力和产品思维。"),
@@ -194,7 +185,6 @@ struct ContentView: View {
                 publishDateText: "2026-03-06",
                 readingTime: 5,
                 tagsText: "Layout, UX, SwiftUI",
-                theme: .purple,
                 isFeatured: false,
                 sections: [
                     .init(title: "先分内容优先级", body: "先确定主信息和次信息，页面自然会更清晰。"),
@@ -208,7 +198,6 @@ struct ContentView: View {
                 publishDateText: "2026-03-01",
                 readingTime: 4,
                 tagsText: "Career, Interview, iOS",
-                theme: .green,
                 isFeatured: false,
                 sections: [
                     .init(title: "突出真实问题", body: "说清楚你解决了什么问题，比堆技术名词更有说服力。"),
@@ -228,7 +217,18 @@ private struct HomeTab: View {
 
     var body: some View {
         NavigationStack {
-            AppBackground {
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        Color(red: 0.96, green: 0.97, blue: 1.0),
+                        .white,
+                        Color(red: 0.95, green: 0.98, blue: 0.99)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 28) {
                         VStack(alignment: .leading, spacing: 12) {
@@ -287,7 +287,18 @@ private struct ArticlesTab: View {
 
     var body: some View {
         NavigationStack {
-            AppBackground {
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        Color(red: 0.96, green: 0.97, blue: 1.0),
+                        .white,
+                        Color(red: 0.95, green: 0.98, blue: 0.99)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+
                 if posts.isEmpty {
                     VStack(spacing: 18) {
                         Image(systemName: "square.and.pencil")
@@ -348,7 +359,18 @@ private struct AboutTab: View {
 
     var body: some View {
         NavigationStack {
-            AppBackground {
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        Color(red: 0.96, green: 0.97, blue: 1.0),
+                        .white,
+                        Color(red: 0.95, green: 0.98, blue: 0.99)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 24) {
                         VStack(alignment: .leading, spacing: 12) {
@@ -392,26 +414,6 @@ private struct AboutTab: View {
     }
 }
 
-private struct AppBackground<Content: View>: View {
-    @ViewBuilder let content: Content
-
-    var body: some View {
-        ZStack {
-            LinearGradient(
-                colors: [
-                    Color(red: 0.96, green: 0.97, blue: 1.0),
-                    .white,
-                    Color(red: 0.95, green: 0.98, blue: 0.99)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
-            content
-        }
-    }
-}
-
 private struct FeaturedCard: View {
     let post: BlogPost
 
@@ -442,7 +444,7 @@ private struct FeaturedCard: View {
         .frame(maxWidth: .infinity, minHeight: 220, alignment: .bottomLeading)
         .background(
             LinearGradient(
-                colors: post.theme.colors,
+                colors: [Color.blue, Color.purple],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -459,7 +461,7 @@ private struct PostRow: View {
             RoundedRectangle(cornerRadius: 22, style: .continuous)
                 .fill(
                     LinearGradient(
-                        colors: post.theme.colors,
+                        colors: [Color.blue, Color.purple],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
@@ -539,26 +541,26 @@ struct ArticleDetailView: View {
                 RoundedRectangle(cornerRadius: 30, style: .continuous)
                     .fill(
                         LinearGradient(
-                            colors: post.theme.colors,
+                            colors: [Color.blue, Color.purple],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
                     )
                     .frame(height: 240)
-                    .overlay(alignment: .bottomLeading) {
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text(post.category.uppercased())
-                                .font(.caption.bold())
-                                .foregroundStyle(.white.opacity(0.9))
-                            Text(post.title)
-                                .font(.system(size: 30, weight: .bold, design: .rounded))
-                                .foregroundStyle(.white)
-                            Text(post.subtitle)
-                                .font(.subheadline)
-                                .foregroundStyle(.white.opacity(0.92))
-                        }
-                        .padding(22)
-                    }
+//                    .overlay(alignment: .bottomLeading) {
+//                        VStack(alignment: .leading, spacing: 10) {
+//                            Text(post.category.uppercased())
+//                                .font(.caption.bold())
+//                                .foregroundStyle(.white.opacity(0.9))
+//                            Text(post.title)
+//                                .font(.system(size: 30, weight: .bold, design: .rounded))
+//                                .foregroundStyle(.white)
+//                            Text(post.subtitle)
+//                                .font(.subheadline)
+//                                .foregroundStyle(.white.opacity(0.92))
+//                        }
+//                        .padding(22)
+//                    }
 
                 HStack(spacing: 14) {
                     Label(post.publishDateText, systemImage: "calendar")
@@ -606,7 +608,6 @@ struct BlogPost: Identifiable, Codable, Hashable {
     var publishDateText: String
     var readingTime: Int
     var tagsText: String
-    var theme: BlogTheme
     var isFeatured: Bool
     var sections: [BlogSection]
 
@@ -618,7 +619,6 @@ struct BlogPost: Identifiable, Codable, Hashable {
         publishDateText: String,
         readingTime: Int,
         tagsText: String,
-        theme: BlogTheme,
         isFeatured: Bool,
         sections: [BlogSection]
     ) {
@@ -629,7 +629,6 @@ struct BlogPost: Identifiable, Codable, Hashable {
         self.publishDateText = publishDateText
         self.readingTime = readingTime
         self.tagsText = tagsText
-        self.theme = theme
         self.isFeatured = isFeatured
         self.sections = sections
     }
@@ -655,28 +654,6 @@ struct AuthorProfile {
     let education: String
     let goals: [String]
     let skills: [String]
-}
-
-enum BlogTheme: String, CaseIterable, Identifiable, Codable {
-    case blue = "Blue"
-    case purple = "Purple"
-    case green = "Green"
-    case orange = "Orange"
-
-    var id: String { rawValue }
-
-    var colors: [Color] {
-        switch self {
-        case .blue:
-            [Color.blue, Color.blue.opacity(0.7)]
-        case .purple:
-            [Color.purple, Color.purple.opacity(0.7)]
-        case .green:
-            [Color.green, Color.green.opacity(0.7)]
-        case .orange:
-            [Color.orange, Color.orange.opacity(0.7)]
-        }
-    }
 }
 
 #Preview {
